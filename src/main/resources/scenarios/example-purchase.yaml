@@ -1,0 +1,29 @@
+id: purchase-1click
+description: "Покупка в один клик — демонстрационный сценарий"
+variables:
+  baseUrl: "https://postman-echo.com"
+steps:
+  - id: create-order
+    type: http
+    request:
+      method: POST
+      url: "${baseUrl}/post"
+      headers:
+        Content-Type: application/json
+      body:
+        productId: "sku-123"
+        quantity: 1
+    extract:
+      echoId: "/json/productId"
+    assertions:
+      - status: 200
+      - jsonPath: "/json/productId"
+        equals: "sku-123"
+
+  - id: confirm-order
+    type: http
+    request:
+      method: GET
+      url: "${baseUrl}/get?order=${echoId}"
+    assertions:
+      - status: 200
