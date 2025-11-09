@@ -1,17 +1,39 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.example.executor.ScenarioExecutor;
+import org.example.io.ScenarioLoader;
+import org.example.model.Scenario;
+
+import java.util.List;
+import org.example.executor.StepResult;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        try {
+            System.out.println("=== API ORCHESTRA ===");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+            // 1. Загружаем сценарий из ресурсов
+            ScenarioLoader loader = new ScenarioLoader();
+            Scenario scenario = loader.loadFromResource("/scenarios/example-purchase.yaml");
+
+            // 2. Выполняем сценарий
+            ScenarioExecutor executor = new ScenarioExecutor();
+            List<StepResult> results = executor.run(scenario);
+
+            // 3. Выводим итоги
+            System.out.println("\n=== Результаты выполнения ===");
+            for (StepResult result : results) {
+                System.out.printf("→ %s: %s (%s)%n",
+                        result.stepId,
+                        result.success ? "✅ Успех" : "❌ Ошибка",
+                        result.message);
+            }
+
+            System.out.println("\n=== Завершено ===");
+
+        } catch (Exception e) {
+            System.err.println("Ошибка выполнения сценария: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
